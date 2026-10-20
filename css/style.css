@@ -144,6 +144,51 @@ section + section { margin-top: 2.5rem; }
 .schedule tbody tr:nth-child(even) { background: #fafbff; }
 .schedule tbody td:nth-child(2) { font-weight: 600; }
 
+/* Roster editing */
+.roster-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.roster-msg { color: #dc2626; font-size: 0.85rem; }
+
+.roster-tools .roster-pw {
+  width: 9rem;
+  font: inherit;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.schedule input {
+  width: 100%;
+  min-width: 7rem;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.row-ctrl { display: flex; align-items: center; gap: 0.4rem; }
+
+.row-del {
+  background: none;
+  border: 0;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.25rem;
+}
+
+@media (max-width: 600px) {
+  .schedule td input { flex: 1; max-width: 65%; min-width: 0; }
+}
+
 /* Feedback calendar */
 .feedback { margin-top: 1.5rem; }
 .feedback-title { margin: 0 0 0.75rem; font-size: 1.05rem; }

@@ -34,16 +34,23 @@ function el(tag, className, text) {
 
 function initFeedback(root) {
   var classId = root.dataset.class;
-  var students = CLASSES[classId] || [];
   var store = loadStore();
 
+  // The roster can be edited on the page, so always read the current list.
+  function getStudents() { return CLASSES[classId] || []; }
+
   // Weekdays the class meets, taken from the schedule ("Mon / Wed / Thu").
-  var classDays = {};
-  students.forEach(function (s) {
-    s.days.split("/").forEach(function (d) {
-      classDays[DAY_NAMES.indexOf(d.trim())] = true;
+  function getClassDays() {
+    var names = DAY_NAMES.map(function (n) { return n.toLowerCase(); });
+    var days = {};
+    getStudents().forEach(function (s) {
+      s.days.split(/[\/,]/).forEach(function (d) {
+        var i = names.indexOf(d.trim().slice(0, 3).toLowerCase());
+        if (i >= 0) days[i] = true;
+      });
     });
-  });
+    return days;
+  }
 
   var today = new Date();
   var year = today.getFullYear();
@@ -57,7 +64,7 @@ function initFeedback(root) {
 
   function hasFeedback(key) {
     var entry = (store[classId] || {})[key];
-    return !!entry && Object.keys(entry).some(function (n) { return entry[n]; });
+    return !!entry && getStudents().some(function (s) { return entry[s.name]; });
   }
 
   // --- Layout ---
@@ -103,6 +110,7 @@ function initFeedback(root) {
 
     DAY_NAMES.forEach(function (n) { grid.appendChild(el("div", "cal-dow", n)); });
 
+    var classDays = getClassDays();
     var firstDow = new Date(year, month, 1).getDay();
     var daysInMonth = new Date(year, month + 1, 0).getDate();
     var todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
@@ -148,12 +156,12 @@ function initFeedback(root) {
     var entry = (store[classId] || {})[selected] || {};
     panel.appendChild(el("h4", "fb-date", selected.replace(/-/g, "/") + " · Class feedback"));
 
-    students.forEach(function (s) {
+    getStudents().forEach(function (s) {
       var field = el("label", "fb-field");
       field.appendChild(el("span", "fb-name", s.name));
       var ta = el("textarea");
       ta.rows = 3;
-      ta.name = s.name;
+      ta.dataset.student = s.name;
       ta.value = entry[s.name] || "";
       ta.placeholder = "Feedback for " + s.name;
       field.appendChild(ta);
@@ -188,9 +196,9 @@ function initFeedback(root) {
     e.preventDefault();
     var entry = {};
     var any = false;
-    students.forEach(function (s) {
-      var text = panel.elements[s.name].value.trim();
-      if (text) { entry[s.name] = text; any = true; }
+    panel.querySelectorAll("textarea").forEach(function (ta) {
+      var text = ta.value.trim();
+      if (text) { entry[ta.dataset.student] = text; any = true; }
     });
     if (any) classData()[selected] = entry;
     else delete classData()[selected];
@@ -232,6 +240,21 @@ function initFeedback(root) {
       fileInput.value = "";
     };
     reader.readAsText(file);
+  });
+
+  // Roster edited: carry feedback over to renamed students and refresh the view.
+  document.addEventListener("roster-change", function (e) {
+    if (e.detail.classId !== classId) return;
+    var renames = e.detail.renames || {};
+    var data = store[classId] || {};
+    Object.keys(data).forEach(function (date) {
+      var moved = {};
+      Object.keys(data[date]).forEach(function (n) { moved[renames[n] || n] = data[date][n]; });
+      data[date] = moved;
+    });
+    saveStore(store);
+    renderCalendar();
+    if (selected) renderPanel();
   });
 
   renderCalendar();
