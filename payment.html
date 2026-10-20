@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment Status - FET Friendly English Talk Class</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Payment Status</h1>
+  </header>
+
+  <main class="narrow">
+    <form id="lock" class="lock-box">
+      <label for="pw">Enter password</label>
+      <input id="pw" type="password" inputmode="numeric" autocomplete="off" autofocus>
+      <button class="btn" type="submit">Open</button>
+      <p id="error" class="error" role="alert" hidden>Wrong password.</p>
+    </form>
+
+    <section id="content" aria-labelledby="payment-title" hidden>
+      <h2 id="payment-title">Payment</h2>
+      <dl class="payment-list" id="payment-list"></dl>
+    </section>
+
+    <p class="back"><a href="index.html">&larr; Back to Classes</a></p>
+  </main>
+
+  <footer class="site-footer">
+    &copy; FET Friendly English Talk Class
+  </footer>
+
+  <script src="js/payment.js"></script>
+</body>
+</html>

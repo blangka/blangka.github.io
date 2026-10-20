@@ -1,0 +1,216 @@
+:root {
+  --bg: #f6f8fc;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --accent: #f59e0b;
+  --border: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.site-header {
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  color: #fff;
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  letter-spacing: 0.02em;
+}
+
+.site-header h1 span { font-weight: 400; }
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  border-left: 5px solid var(--accent);
+  padding-left: 0.6rem;
+}
+
+section + section { margin-top: 2.5rem; }
+
+/* Teachers */
+.teacher-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.teacher-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.teacher-card h3 { margin: 0.5rem 0 0.4rem; font-size: 1.25rem; }
+
+.teacher-card a {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.teacher-card a:hover { text-decoration: underline; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: var(--primary-dark);
+}
+
+.badge-sub { background: #fef3c7; color: #92400e; }
+
+/* Classes */
+.class-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.class-card + .class-card { margin-top: 1.5rem; }
+
+.class-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.class-head h3 { margin: 0; font-size: 1.3rem; }
+.meta { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.9rem; }
+
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.schedule {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.schedule th,
+.schedule td {
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule thead th {
+  background: #eef2ff;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+}
+
+.schedule tbody tr:last-child td { border-bottom: 0; }
+.schedule tbody tr:nth-child(even) { background: #fafbff; }
+.schedule tbody td:nth-child(2) { font-weight: 600; }
+
+.site-footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 1.5rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 600px) {
+  .schedule thead { display: none; }
+  .schedule, .schedule tbody, .schedule tr, .schedule td { display: block; width: 100%; }
+  .schedule tbody tr { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .schedule tbody tr:last-child { border-bottom: 0; }
+  .schedule td { display: flex; justify-content: space-between; gap: 1rem; border: 0; padding: 0.3rem 0.9rem; }
+  .schedule td::before { content: attr(data-label); color: var(--muted); font-size: 0.85rem; }
+}
+
+/* Payment */
+.payment-link { margin-top: 1.5rem; text-align: center; }
+
+.btn {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+}
+
+.btn:hover { background: var(--primary-dark); }
+
+main.narrow { max-width: 480px; }
+
+.lock-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lock-box input {
+  font-size: 1.1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.error { margin: 0; color: #dc2626; font-size: 0.9rem; }
+
+.payment-list {
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.payment-list dt { color: var(--muted); font-size: 0.9rem; }
+.payment-list dd { margin: 0.1rem 0 1rem; font-size: 1.6rem; font-weight: 700; }
+.payment-list dd:last-child { margin-bottom: 0; }
+
+.back { text-align: center; margin-top: 1.5rem; }
+.back a { color: var(--primary); text-decoration: none; }
