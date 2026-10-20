@@ -7,6 +7,10 @@ var CLASSES = {
     { name: "Jun",   pht: "7:30 PM - 7:50 PM", kst: "8:30 PM - 8:50 PM", days: "Mon / Wed / Thu", paidUntil: "2026-12-25" },
     { name: "Tom",   pht: "8:00 PM - 8:20 PM", kst: "9:00 PM - 9:20 PM", days: "Mon / Wed / Thu", paidUntil: "2026-12-25" },
     { name: "Derek", pht: "8:30 PM - 8:50 PM", kst: "9:30 PM - 9:50 PM", days: "Mon / Wed / Thu", paidUntil: "2026-12-04" }
+  ],
+  class2: [
+    { name: "Joohyuk", pht: "7:00 PM - 7:20 PM", kst: "8:00 PM - 8:20 PM",  days: "Tue / Wed / Thu", paidUntil: "Free Trial" },
+    { name: "Jihoon",  pht: "9:00 PM - 9:20 PM", kst: "10:00 PM - 10:20 PM", days: "Tue / Wed / Thu", paidUntil: "Free Trial" }
   ]
 };
 
