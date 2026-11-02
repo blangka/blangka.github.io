@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>태리가 만든 라부부랑 자동차 대결</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage" data-state="title">
+    <canvas id="game"></canvas>
+
+    <a class="home" href="../index.html">&larr; Home</a>
+    <button id="btnMute" type="button" aria-label="소리 켜기/끄기">&#128266;</button>
+
+    <div id="touch">
+      <button id="btnLeft" type="button" aria-label="왼쪽">&#9664;</button>
+      <button id="btnRight" type="button" aria-label="오른쪽">&#9654;</button>
+    </div>
+  </div>
+
+  <script src="sound.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

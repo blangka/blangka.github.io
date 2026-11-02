@@ -1,0 +1,103 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #2b1d4a;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: "Jua", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#stage {
+  position: relative;
+  background: #000;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#game {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.home {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+#stage[data-state="title"] .home,
+#stage[data-state="result"] .home,
+#stage[data-state="ending"] .home { display: block; }
+
+/* 소리 켜기/끄기 */
+#btnMute {
+  position: absolute;
+  right: 2%;
+  top: 9%;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 18px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 모바일 좌우 버튼: 어린이 손가락으로 누르기 쉽게 아주 크게 */
+#touch {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 19%;
+  display: none;
+  pointer-events: none;
+}
+
+#stage.touch[data-state="race"] #touch,
+#stage.touch[data-state="count"] #touch,
+#stage.touch[data-state="paused"] #touch { display: block; }
+
+#touch button {
+  position: absolute;
+  bottom: 3%;
+  width: 47%;
+  height: 88%;
+  border-radius: 28px;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  color: #fff;
+  font-size: 15vmin;
+  line-height: 1;
+  padding: 0;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+#btnLeft { left: 2%; background: rgba(255, 105, 180, 0.55); }
+#btnRight { right: 2%; background: rgba(70, 200, 255, 0.55); }
+#touch button:active, #touch button.down { filter: brightness(1.35); transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }
