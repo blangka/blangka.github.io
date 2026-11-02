@@ -471,7 +471,7 @@
         if (bs.pt <= 0) {
           const count = rage ? 7 : 5;
           for (let i = 0; i < count; i++) {
-            aimedBullet(bs.x, bs.y + 30, rage ? 250 : 210, (i - (count - 1) / 2) * 0.22, bulletOpts);
+            aimedBullet(bs.x, bs.y + 30, rage ? 220 : 180, (i - (count - 1) / 2) * 0.24, bulletOpts);
           }
           bs.n--;
           bs.pt = 0.4;
@@ -486,7 +486,7 @@
           const off = (bs.ring++ % 2) * (Math.PI / count);
           for (let i = 0; i < count; i++) {
             const a = off + (i / count) * Math.PI * 2;
-            enemyBullet(bs.x, bs.y, Math.cos(a) * 150, Math.sin(a) * 150, bulletOpts);
+            enemyBullet(bs.x, bs.y, Math.cos(a) * 130, Math.sin(a) * 130, bulletOpts);
           }
           bs.n--;
           bs.pt = 0.7;

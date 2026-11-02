@@ -49,7 +49,7 @@ window.GAME_DATA = {
         name: '이웃집 개 멍멍이 대장',
         emoji: '🐕',
         bullet: '🦴',
-        size: 120, r: 50, hp: 110, score: 5000,
+        size: 120, r: 50, hp: 90, score: 5000,
         patterns: ['spread', 'ring', 'spread', 'charge'],
       },
     },
