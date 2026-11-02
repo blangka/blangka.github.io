@@ -10,7 +10,7 @@
   const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
   const INK = '#5a3a30';   // 모든 그림에 쓰는 따뜻한 갈색 윤곽선
   const PINK = '#ff5fa2';
-  const MINT = '#2fc9a4';
+  const MINT = '#9b7bec';   // 라부부 보라색
 
   const stage = document.getElementById('stage');
   const canvas = document.getElementById('game');
@@ -214,17 +214,23 @@
     const lw = Math.max(1.6, r * 0.09);
     const HAIR = '#4b2a22';
     const SKIN = '#ffdcc2';
-    // 뒷머리
-    oval(cx, cy - r * 0.04, r * 1.06, r * 1.04, HAIR, INK, lw);
-    // 양쪽으로 묶은 머리와 분홍 리본
+    // 사과머리: 머리 위쪽 양옆으로 동그랗게 묶은 머리 뭉치와 분홍 리본
     for (const s of [-1, 1]) {
-      oval(cx + s * r * 1.08, cy + r * 0.52, r * 0.36, r * 0.64, HAIR, INK, lw, s * 0.28);
-      const bx = cx + s * r * 0.98;
-      const by = cy - r * 0.08;
-      poly([[bx - r * 0.44, by - r * 0.27], [bx, by], [bx - r * 0.44, by + r * 0.27]], PINK, INK, lw * 0.8);
-      poly([[bx + r * 0.44, by - r * 0.27], [bx, by], [bx + r * 0.44, by + r * 0.27]], PINK, INK, lw * 0.8);
-      oval(bx, by, r * 0.14, r * 0.14, '#ff2e84', INK, lw * 0.7);
+      const ax = cx + s * r * 0.7;
+      const ay = cy - r * 1.08;
+      // 묶은 머리 밑동
+      poly([[cx + s * r * 0.5, cy - r * 0.78], [ax - s * r * 0.18, ay + r * 0.32], [ax + s * r * 0.12, ay + r * 0.38], [cx + s * r * 0.8, cy - r * 0.5]], HAIR, INK, lw);
+      // 동그란 사과 모양 머리 뭉치
+      oval(ax, ay, r * 0.46, r * 0.44, HAIR, INK, lw);
+      // 머리 윤기
+      ctx.beginPath();
+      ctx.arc(ax - s * r * 0.04, ay - r * 0.04, r * 0.3, Math.PI * (s < 0 ? 1.15 : 1.1), Math.PI * (s < 0 ? 1.55 : 1.5));
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = lw * 1.1;
+      ctx.stroke();
     }
+    // 뒷머리
+    oval(cx, cy - r * 0.04, r * 1.0, r * 0.98, HAIR, INK, lw);
     // 얼굴
     oval(cx, cy + r * 0.08, r * 0.96, r * 0.92, SKIN, INK, lw);
     // 앞머리
@@ -243,6 +249,14 @@
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
     ctx.lineWidth = lw * 1.2;
     ctx.stroke();
+    // 사과머리 분홍 리본 (머리 뭉치를 묶은 자리, 맨 앞에 그려서 잘 보이게)
+    for (const s of [-1, 1]) {
+      const bx = cx + s * r * 0.74;
+      const by = cy - r * 0.7;
+      poly([[bx - r * 0.4, by - r * 0.26], [bx, by], [bx - r * 0.4, by + r * 0.26]], PINK, INK, lw * 0.8);
+      poly([[bx + r * 0.4, by - r * 0.26], [bx, by], [bx + r * 0.4, by + r * 0.26]], PINK, INK, lw * 0.8);
+      oval(bx, by, r * 0.13, r * 0.13, '#ff2e84', INK, lw * 0.7);
+    }
     // 눈
     for (const s of [-1, 1]) {
       const ex = cx + s * r * 0.38;
@@ -285,87 +299,240 @@
     }
   }
 
-  // ---------- 캐릭터: 라부부 (귀엽게!) ----------
+  // ---------- 캐릭터: 라부부 (알록달록 복슬복슬 토끼 후드를 쓴 인형) ----------
+  function furGrad(x0, y0, x1, y1) {
+    const gr = ctx.createLinearGradient(x0, y0, x1, y1);
+    gr.addColorStop(0, '#9fd6ff');
+    gr.addColorStop(0.42, '#c7b6ff');
+    gr.addColorStop(0.75, '#ffbbdf');
+    gr.addColorStop(1, '#b9c8ff');
+    return gr;
+  }
+
+  // 복슬복슬한 털뭉치: 둥근 털 조각을 가장자리에 빙 둘러 붙이고, 파랑·분홍으로 물든 느낌을 입힌다
+  function furBlob(cx, cy, rx, ry, n, tuft, lw) {
+    const TAU = Math.PI * 2;
+    const circles = [];
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU;
+      circles.push([cx + Math.cos(a) * rx * 0.9, cy + Math.sin(a) * ry * 0.9, tuft * (0.9 + 0.2 * Math.sin(i * 2.7))]);
+    }
+    ctx.fillStyle = INK;                                   // 바깥 윤곽선: 조금 더 큰 원을 먼저 깐다
+    for (const c of circles) { ctx.beginPath(); ctx.arc(c[0], c[1], c[2] + lw, 0, TAU); ctx.fill(); }
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx * 0.9 + lw, ry * 0.9 + lw, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = furGrad(cx - rx, cy - ry, cx + rx, cy + ry);
+    for (const c of circles) { ctx.beginPath(); ctx.arc(c[0], c[1], c[2], 0, TAU); ctx.fill(); }
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx * 0.9, ry * 0.9, 0, 0, TAU); ctx.fill();
+    // 알록달록 물든 느낌 (털 모양 안쪽에만)
+    ctx.save();
+    ctx.beginPath();
+    for (const c of circles) { ctx.moveTo(c[0] + c[2], c[1]); ctx.arc(c[0], c[1], c[2], 0, TAU); }
+    ctx.moveTo(cx + rx * 0.9, cy);
+    ctx.ellipse(cx, cy, rx * 0.9, ry * 0.9, 0, 0, TAU);
+    ctx.clip();
+    const m = Math.max(rx, ry);
+    const pink = ctx.createRadialGradient(cx + rx * 0.4, cy + ry * 0.5, 0, cx + rx * 0.4, cy + ry * 0.5, m * 0.85);
+    pink.addColorStop(0, 'rgba(255,150,205,0.6)');
+    pink.addColorStop(1, 'rgba(255,150,205,0)');
+    ctx.fillStyle = pink;
+    ctx.fillRect(cx - rx * 1.2, cy - ry * 1.2, rx * 2.4, ry * 2.4);
+    const blue = ctx.createRadialGradient(cx - rx * 0.5, cy - ry * 0.35, 0, cx - rx * 0.5, cy - ry * 0.35, m * 0.85);
+    blue.addColorStop(0, 'rgba(130,200,255,0.65)');
+    blue.addColorStop(1, 'rgba(130,200,255,0)');
+    ctx.fillStyle = blue;
+    ctx.fillRect(cx - rx * 1.2, cy - ry * 1.2, rx * 2.4, ry * 2.4);
+    ctx.restore();
+  }
+
+  // 길고 둥근 토끼 귀 (안쪽은 살구색, 반짝이는 줄무늬가 있어요)
+  function labooEar(r, side, wig, lw) {
+    ctx.save();
+    ctx.translate(side * r * 0.5, -r * 0.7);
+    ctx.rotate(side * (0.16 + wig));
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.36, r * 0.25);
+    ctx.bezierCurveTo(-r * 0.5, -r * 0.6, -r * 0.38, -r * 1.6, 0, -r * 1.62);
+    ctx.bezierCurveTo(r * 0.38, -r * 1.6, r * 0.5, -r * 0.6, r * 0.36, r * 0.25);
+    ctx.closePath();
+    ctx.fillStyle = furGrad(-r * 0.4, -r * 1.6, r * 0.4, r * 0.2);
+    ctx.fill();
+    ctx.lineWidth = lw;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = INK;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.2, r * 0.12);
+    ctx.bezierCurveTo(-r * 0.3, -r * 0.5, -r * 0.22, -r * 1.3, 0, -r * 1.34);
+    ctx.bezierCurveTo(r * 0.22, -r * 1.3, r * 0.3, -r * 0.5, r * 0.2, r * 0.12);
+    ctx.closePath();
+    ctx.fillStyle = '#f8e0c4';
+    ctx.fill();
+    ctx.lineWidth = lw * 0.5;
+    ctx.strokeStyle = '#c9a07c';
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, -r * 0.62, r * 0.065, r * 0.42, 0, 0, Math.PI * 2);
+    ctx.fillStyle = side < 0 ? '#b9a6ee' : '#f39ac8';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(0, -r * 0.9, r * 0.03, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 머리: 후드 + 귀 + 살구색 얼굴 (큰 보라색 눈, 작은 보라색 코, 뾰족뾰족 이빨 웃음)
   function labooHead(cx, cy, r, mood = 'smile', t = 0) {
-    const lw = Math.max(1.6, r * 0.09);
-    const FUR = '#ecd0a8';
-    const FUR_D = '#d9b184';
-    const wig = Math.sin(t * 5) * 0.05;
-    // 길고 뾰족한 귀
+    const lw = Math.max(1.3, r * 0.065);
+    const wig = Math.sin(t * 4) * 0.04;
+    ctx.save();
+    ctx.translate(cx, cy);
+    labooEar(r, -1, -wig, lw);
+    labooEar(r, 1, wig, lw);
+    furBlob(0, 0, r * 1.02, r * 0.96, 20, r * 0.25, lw);
+    // 후드 안쪽 그림자와 살구색 얼굴
+    oval(0, r * 0.14, r * 0.8, r * 0.7, '#b7a2ee', null);
+    oval(0, r * 0.16, r * 0.68, r * 0.57, '#f6cba6', INK, lw * 0.8);
+    oval(0, r * 0.4, r * 0.5, r * 0.25, 'rgba(255,255,255,0.22)', null);
+    // 볼터치와 코
+    oval(-r * 0.5, r * 0.36, r * 0.14, r * 0.09, 'rgba(255,120,160,0.6)', null);
+    oval(r * 0.5, r * 0.36, r * 0.14, r * 0.09, 'rgba(255,120,160,0.6)', null);
+    poly([[-r * 0.07, r * 0.2], [r * 0.07, r * 0.2], [0, r * 0.29]], '#7c55cf', INK, lw * 0.5);
+    // 눈
     for (const s of [-1, 1]) {
-      ctx.save();
-      ctx.translate(cx + s * r * 0.52, cy - r * 0.62);
-      ctx.rotate(s * (0.3 + wig));
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.3, 0);
-      ctx.quadraticCurveTo(-r * 0.24, -r * 1.0, 0, -r * 1.65);
-      ctx.quadraticCurveTo(r * 0.24, -r * 1.0, r * 0.3, 0);
-      ctx.closePath();
-      paint(FUR, INK, lw);
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.15, -r * 0.08);
-      ctx.quadraticCurveTo(-r * 0.12, -r * 0.8, 0, -r * 1.3);
-      ctx.quadraticCurveTo(r * 0.12, -r * 0.8, r * 0.15, -r * 0.08);
-      ctx.closePath();
-      paint('#f7a3b9', null);
-      ctx.restore();
-    }
-    // 복슬복슬한 볼 털
-    for (const s of [-1, 1]) {
-      poly([[cx + s * r * 0.96, cy - r * 0.05], [cx + s * r * 1.34, cy + r * 0.1], [cx + s * r * 1.0, cy + r * 0.28]], FUR, INK, lw * 0.8);
-      poly([[cx + s * r * 0.9, cy + r * 0.3], [cx + s * r * 1.24, cy + r * 0.5], [cx + s * r * 0.8, cy + r * 0.62]], FUR, INK, lw * 0.8);
-    }
-    // 동글동글한 얼굴
-    oval(cx, cy, r * 1.06, r * 0.98, FUR, INK, lw);
-    poly([[cx - r * 0.14, cy - r * 0.9], [cx, cy - r * 1.28], [cx + r * 0.14, cy - r * 0.9]], FUR, INK, lw * 0.8);
-    oval(cx, cy + r * 0.15, r * 0.7, r * 0.55, 'rgba(255,255,255,0.35)', null);
-    // 큰 눈
-    for (const s of [-1, 1]) {
-      const ex = cx + s * r * 0.43;
-      const ey = cy - r * 0.08;
-      if (mood === 'happy') {
+      const ex = s * r * 0.31;
+      const ey = r * 0.07;
+      if (mood === 'dizzy') {
         ctx.beginPath();
-        ctx.arc(ex, ey + r * 0.06, r * 0.2, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.moveTo(ex - r * 0.13, ey - r * 0.13); ctx.lineTo(ex + r * 0.13, ey + r * 0.13);
+        ctx.moveTo(ex + r * 0.13, ey - r * 0.13); ctx.lineTo(ex - r * 0.13, ey + r * 0.13);
         ctx.strokeStyle = INK; ctx.lineWidth = lw * 1.3; ctx.lineCap = 'round'; ctx.stroke();
-      } else if (mood === 'dizzy') {
+      } else if (mood === 'happy') {
         ctx.beginPath();
-        ctx.moveTo(ex - r * 0.15, ey - r * 0.15); ctx.lineTo(ex + r * 0.15, ey + r * 0.15);
-        ctx.moveTo(ex + r * 0.15, ey - r * 0.15); ctx.lineTo(ex - r * 0.15, ey + r * 0.15);
-        ctx.strokeStyle = INK; ctx.lineWidth = lw * 1.2; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.arc(ex, ey + r * 0.07, r * 0.17, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.strokeStyle = INK; ctx.lineWidth = lw * 1.5; ctx.lineCap = 'round'; ctx.stroke();
+      } else if (mood === 'sad') {
+        // 엉엉 우는 눈: 눈물이 가득 고여 반짝이고, 눈썹은 걱정스럽게 올라가 있어요
+        oval(ex, ey + r * 0.02, r * 0.2, r * 0.22, '#fff', INK, lw * 0.7);
+        const ig = ctx.createRadialGradient(ex, ey + r * 0.05, 0, ex, ey + r * 0.05, r * 0.17);
+        ig.addColorStop(0, '#e08cff'); ig.addColorStop(0.7, '#9a3fd6'); ig.addColorStop(1, '#5d1f9a');
+        ctx.beginPath(); ctx.ellipse(ex, ey + r * 0.05, r * 0.145, r * 0.165, 0, 0, Math.PI * 2);
+        ctx.fillStyle = ig; ctx.fill();
+        oval(ex, ey + r * 0.06, r * 0.06, r * 0.075, '#2c0a4a', null);
+        oval(ex - r * 0.05, ey - r * 0.03, r * 0.06, r * 0.06, '#fff', null);
+        oval(ex + r * 0.05, ey + r * 0.1, r * 0.035, r * 0.03, '#fff', null);
+        // 눈 아래에 고인 눈물
+        ctx.beginPath();
+        ctx.ellipse(ex, ey + r * 0.2, r * 0.2, r * 0.06, 0, 0, Math.PI);
+        ctx.fillStyle = 'rgba(140,215,255,0.9)'; ctx.fill();
+        ctx.lineWidth = lw * 0.5; ctx.strokeStyle = 'rgba(70,150,220,0.9)'; ctx.stroke();
+        // 걱정 눈썹
+        ctx.beginPath();
+        ctx.moveTo(ex + s * r * 0.2, ey - r * 0.22);
+        ctx.lineTo(ex - s * r * 0.15, ey - r * 0.4);
+        ctx.strokeStyle = INK; ctx.lineWidth = lw * 1.1; ctx.lineCap = 'round'; ctx.stroke();
       } else {
-        oval(ex, ey, r * 0.27, r * 0.3, '#fff', INK, lw * 0.8);
-        oval(ex + s * -r * 0.01, ey + r * 0.03, r * 0.19, r * 0.22, '#3a2218', null);
-        oval(ex - r * 0.07, ey - r * 0.07, r * 0.07, r * 0.07, '#fff', null);
-        oval(ex + r * 0.07, ey + r * 0.09, r * 0.035, r * 0.035, '#fff', null);
+        oval(ex, ey, r * 0.2, r * 0.235, '#fff', INK, lw * 0.7);
+        const ig = ctx.createRadialGradient(ex, ey + r * 0.02, 0, ex, ey + r * 0.02, r * 0.19);
+        ig.addColorStop(0, '#e08cff');
+        ig.addColorStop(0.7, '#9a3fd6');
+        ig.addColorStop(1, '#5d1f9a');
+        ctx.beginPath(); ctx.ellipse(ex, ey + r * 0.02, r * 0.155, r * 0.19, 0, 0, Math.PI * 2);
+        ctx.fillStyle = ig; ctx.fill();
+        oval(ex, ey + r * 0.04, r * 0.07, r * 0.09, '#2c0a4a', null);
+        oval(ex - r * 0.06, ey - r * 0.06, r * 0.055, r * 0.055, '#fff', null);
+        oval(ex + r * 0.06, ey + r * 0.09, r * 0.028, r * 0.028, '#fff', null);
       }
     }
-    // 볼터치와 코
-    oval(cx - r * 0.7, cy + r * 0.3, r * 0.19, r * 0.11, 'rgba(255,110,150,0.6)', null);
-    oval(cx + r * 0.7, cy + r * 0.3, r * 0.19, r * 0.11, 'rgba(255,110,150,0.6)', null);
-    oval(cx, cy + r * 0.14, r * 0.07, r * 0.05, '#7a4a35', null);
-    // 입: 삐죽삐죽 이빨이 보이는 웃는 입
+    // 입
+    const mx0 = -r * 0.46;
+    const mx1 = r * 0.46;
+    const my = r * 0.36;
+    const teeth = (qy) => {
+      for (let i = 0; i < 8; i++) {
+        const u = (i + 0.5) / 8;
+        const px = (1 - u) * (1 - u) * mx0 + 2 * (1 - u) * u * 0 + u * u * mx1;
+        const py = (1 - u) * (1 - u) * my + 2 * (1 - u) * u * qy + u * u * my;
+        poly([[px - r * 0.052, py - r * 0.005], [px + r * 0.052, py - r * 0.005], [px, py + r * 0.085]], '#fff', INK, lw * 0.35);
+      }
+    };
     if (mood === 'sad') {
+      const cy2 = r * 0.5;
       ctx.beginPath();
-      ctx.arc(cx, cy + r * 0.78, r * 0.2, Math.PI * 1.15, Math.PI * 1.85);
+      ctx.moveTo(-r * 0.3, cy2 + r * 0.02);
+      ctx.quadraticCurveTo(0, cy2 - r * 0.08, r * 0.3, cy2 + r * 0.02);
+      ctx.quadraticCurveTo(r * 0.36, cy2 + r * 0.36, 0, cy2 + r * 0.4);
+      ctx.quadraticCurveTo(-r * 0.36, cy2 + r * 0.36, -r * 0.3, cy2 + r * 0.02);
+      ctx.closePath();
+      paint('#8e2b3d', INK, lw);
+      ctx.save();
+      ctx.clip();
+      oval(0, cy2 + r * 0.36, r * 0.2, r * 0.14, '#ff8fb1', null);
+      ctx.restore();
+      for (let i = 0; i < 4; i++) {
+        const tx = -r * 0.16 + i * r * 0.107;
+        poly([[tx - r * 0.045, cy2 + r * 0.005], [tx + r * 0.045, cy2 + r * 0.005], [tx, cy2 + r * 0.08]], '#fff', INK, lw * 0.35);
+      }
+    } else if (mood === 'happy') {
+      ctx.beginPath();
+      ctx.moveTo(mx0, my);
+      ctx.quadraticCurveTo(0, my + r * 0.12, mx1, my);
+      ctx.quadraticCurveTo(0, my + r * 0.62, mx0, my);
+      ctx.closePath();
+      paint('#8e2b3d', INK, lw);
+      ctx.save();
+      ctx.clip();
+      oval(0, my + r * 0.36, r * 0.22, r * 0.14, '#ff8fb1', null);
+      ctx.restore();
+      teeth(my + r * 0.12);
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(mx0, my);
+      ctx.quadraticCurveTo(0, my + r * 0.3, mx1, my);
       ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
-      oval(cx + r * 0.8, cy + r * 0.05, r * 0.08, r * 0.13, '#7fd0ff', INK, lw * 0.5);
-      return;
+      teeth(my + r * 0.15);
     }
-    const open = mood === 'happy' ? 0.62 : 0.5;
-    ctx.beginPath();
-    ctx.moveTo(cx - r * 0.56, cy + r * 0.34);
-    ctx.quadraticCurveTo(cx, cy + r * (0.34 + open + 0.35), cx + r * 0.56, cy + r * 0.34);
-    ctx.quadraticCurveTo(cx, cy + r * 0.46, cx - r * 0.56, cy + r * 0.34);
-    ctx.closePath();
-    paint('#8e2b3d', INK, lw);
+    if (mood === 'sad') {
+      for (const s of [-1, 1]) {
+        const wob = Math.sin(t * 9 + s) * r * 0.03;
+        // 볼을 타고 흐르는 눈물줄기
+        ctx.beginPath();
+        ctx.moveTo(s * r * 0.31, r * 0.26);
+        ctx.quadraticCurveTo(s * (r * 0.5 + wob), r * 0.5, s * (r * 0.55 + wob), r * 0.78);
+        ctx.strokeStyle = 'rgba(120,205,255,0.95)'; ctx.lineWidth = r * 0.1; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = r * 0.03; ctx.stroke();
+        // 뚝뚝 떨어지는 눈물방울 (시간에 따라 아래로 떨어져요)
+        for (let k = 0; k < 2; k++) {
+          const u = (t * 1.4 + k * 0.5 + (s > 0 ? 0.25 : 0)) % 1;
+          oval(s * (r * 0.58 + wob), r * 0.78 + u * r * 0.7, r * 0.065, r * 0.095, 'rgba(140,215,255,' + (1 - u * 0.85).toFixed(2) + ')', 'rgba(70,150,220,' + (1 - u).toFixed(2) + ')', lw * 0.4);
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  // 온몸이 보이는 라부부 (복슬복슬한 몸, 작은 손, 보라색 발톱)
+  function labooFull(cx, cy, r, mood = 'smile', t = 0) {
+    const lw = Math.max(1.3, r * 0.065);
     ctx.save();
-    ctx.clip();
-    for (let i = 0; i < 7; i++) {
-      const tx = cx - r * 0.45 + i * r * 0.15;
-      const ty = cy + r * (0.36 + 0.02 * Math.sin(i / 6 * Math.PI));
-      poly([[tx - r * 0.065, ty - r * 0.02], [tx + r * 0.065, ty - r * 0.02], [tx, ty + r * 0.15]], '#fff', INK, lw * 0.45);
+    ctx.translate(cx, cy + Math.sin(t * 3.2) * r * 0.03);
+    for (const s of [-1, 1]) {
+      furBlob(s * r * 0.46, r * 2.42, r * 0.34, r * 0.26, 9, r * 0.13, lw);
+      for (let k = -1; k <= 1; k++) oval(s * r * 0.46 + k * r * 0.15, r * 2.66, r * 0.05, r * 0.075, '#7b5bd4', INK, lw * 0.5);
     }
-    oval(cx, cy + r * 0.78, r * 0.2, r * 0.1, '#ff8fb1', null);
+    furBlob(0, r * 1.65, r * 0.94, r * 0.98, 18, r * 0.22, lw);
+    for (const s of [-1, 1]) {
+      ctx.save();
+      ctx.translate(s * r * 1.0, r * 1.45);
+      ctx.rotate(-s * 0.38);
+      furBlob(0, 0, r * 0.3, r * 0.5, 10, r * 0.15, lw);
+      ctx.restore();
+      const hx = s * r * 1.22;
+      const hy = r * 1.98;
+      oval(hx, hy, r * 0.17, r * 0.15, '#f6cba6', INK, lw * 0.7);
+      for (let k = -1; k <= 1; k++) oval(hx + k * r * 0.09, hy + r * 0.12, r * 0.05, r * 0.07, '#f6cba6', INK, lw * 0.5);
+    }
+    labooHead(0, 0, r, mood, t);
     ctx.restore();
   }
 
@@ -412,8 +579,8 @@
       oval(0, 3, 14, 10, '#ffd1e6', INK, 2);
       taeriHead(0, -13, 17, o.mood || 'smile');
     } else {
-      oval(0, 3, 14, 10, '#b8f3df', INK, 2);
-      labooHead(0, -10, 16, o.mood || 'smile', t);
+      furBlob(0, 6, 14, 10, 10, 5, 1.6);
+      labooHead(0, -9, 13, o.mood || 'smile', t);
     }
     // 어지러운 별
     if (o.mood === 'dizzy') {
@@ -1055,7 +1222,7 @@
     const pY = carY();
     const lY = sy(L.dist, cam);
     const cars = [
-      { y: lY, draw: () => drawCar(L.x, lY, { body: '#3fd2ac', trim: '#c6fff0', plate: '라부부', who: 'laboo', tilt: 0, t: g.t, boost: false, mood: L.tripT > 0 ? 'dizzy' : (R.winner === 'l' ? 'happy' : 'smile') }) },
+      { y: lY, draw: () => drawCar(L.x, lY, { body: '#a98cf3', trim: '#e6dcff', plate: '라부부', who: 'laboo', tilt: 0, t: g.t, boost: false, mood: L.tripT > 0 ? 'dizzy' : (R.winner === 'l' ? 'happy' : (R.winner === 'p' ? 'sad' : 'smile')) }) },
       { y: pY, draw: () => drawCar(p.x + (p.dizzyT > 0 ? Math.sin(g.t * 40) * 3 : 0), pY, { body: '#ff6fae', trim: '#ffd1e6', plate: '임태리', who: 'taeri', tilt: p.tilt + (p.dizzyT > 0 ? Math.sin(g.t * 30) * 0.12 : 0), t: g.t, boost: p.boostT > 0, mood: p.dizzyT > 0 ? 'dizzy' : (R.winner === 'p' || p.boostT > 0 ? 'happy' : 'smile') }) },
     ].sort((a, b) => a.y - b.y);
     for (const car of cars) { if (car.y > -90 && car.y < H + 90) car.draw(); }
@@ -1070,12 +1237,12 @@
     if (lY <= -60) {
       ctx.globalAlpha = 0.95;
       oval(L.x, 120, 22, 22, '#fff', MINT, 3);
-      labooHead(L.x, 124, 14, 'smile', g.t);
+      labooHead(L.x, 126, 11, 'smile', g.t);
       bubble('앞이야!', L.x, 154, 14, '#fff', MINT);
       ctx.globalAlpha = 1;
     } else if (lY >= H + 40) {
       oval(L.x, H - 190, 22, 22, '#fff', MINT, 3);
-      labooHead(L.x, H - 186, 14, 'smile', g.t);
+      labooHead(L.x, H - 184, 11, 'smile', g.t);
     }
 
     if (R.toast) {
@@ -1100,7 +1267,7 @@
     emoji('🏁', x1 + 6, by - 2, 22);
     const mx = (d) => lerp(x0, x1, clamp(d / c.length, 0, 1));
     oval(mx(L.dist), by, 14, 14, '#fff', MINT, 3);
-    labooHead(mx(L.dist), by + 1, 8.5, 'smile', 0);
+    labooHead(mx(L.dist), by + 2, 7, 'smile', 0);
     oval(mx(p.dist), by, 14, 14, '#fff', PINK, 3);
     taeriHead(mx(p.dist), by + 1, 8.5, 'smile');
 
@@ -1181,23 +1348,23 @@
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
     ctx.fillRect(0, 0, W, H);
 
-    card(26, 40, W - 52, 470);
-    ink('태리가 만든', W / 2, 98, 30, '#8a6a58');
-    ink('라부부랑', W / 2, 150, 46, PINK, 'center', W - 90);
-    ink('자동차 대결', W / 2, 206, 46, '#2fa8e0', 'center', W - 90);
+    card(26, 30, W - 52, 500);
+    ink('태리가 만든', W / 2, 84, 28, '#8a6a58');
+    ink('라부부랑', W / 2, 132, 44, PINK, 'center', W - 90);
+    ink('자동차 대결', W / 2, 186, 44, '#2fa8e0', 'center', W - 90);
 
     // 태리와 라부부가 마주 보고 있어요
     const bob = Math.sin(g.t * 3) * 4;
-    taeriHead(150, 330 + bob, 52, 'happy');
-    labooHead(332, 336 - bob, 50, 'happy', g.t);
+    taeriHead(140, 345 + bob, 46, 'happy');
+    labooFull(336, 330 - bob, 33, 'happy', g.t);
     // 이름표
-    rrect(88, 392, 124, 38, 12, '#fff', PINK, 3);
-    ink('임태리', 150, 412, 25, PINK);
-    rrect(272, 392, 120, 38, 12, '#fff', MINT, 3);
-    ink('라부부', 332, 412, 25, '#1f9d7f');
+    rrect(78, 441, 124, 38, 12, '#fff', PINK, 3);
+    ink('임태리', 140, 461, 25, PINK);
+    rrect(276, 441, 120, 38, 12, '#fff', MINT, 3);
+    ink('라부부', 336, 461, 25, '#6c49c9');
     bubble('VS', W / 2, 352, 36, '#fff', '#ffb703');
 
-    ink('7살 태리의 신나는 자동차 경주', W / 2, 466, 17, '#8a6a58');
+    ink('7살 태리의 신나는 자동차 경주', W / 2, 504, 17, '#8a6a58');
 
     // 시작 안내: 방향키 두 개만 쓰면 돼요
     const pulse = Math.floor(g.t * 2) % 2 === 0;
@@ -1236,7 +1403,7 @@
     if (res.win) {
       ink('와! 태리가 이겼어요!', W / 2, top + 62, 32, PINK, 'center', W - 130);
       taeriHead(W / 2 - 78, top + 160, 50, 'happy');
-      labooHead(W / 2 + 84, top + 166, 44, 'smile', g.t);
+      labooFull(W / 2 + 84, top + 168, 26, 'sad', g.t);
       emoji('🏆', W / 2, top + 150, 52, Math.sin(g.t * 4) * 0.15);
       ink(`기록  ${res.time.toFixed(1)}초`, W / 2, top + 262, 26);
       ink(`모은 별  ⭐ ${res.stars}개   부스트 ${res.boosts}번`, W / 2, top + 304, 21, '#8a6a58');
@@ -1245,7 +1412,7 @@
     } else {
       ink('아깝다! 한 번 더!', W / 2, top + 62, 34, '#2fa8e0');
       taeriHead(W / 2 - 78, top + 160, 50, 'sad');
-      labooHead(W / 2 + 84, top + 166, 44, 'happy', g.t);
+      labooFull(W / 2 + 84, top + 168, 26, 'happy', g.t);
       ink('라부부가 먼저 도착했어요', W / 2, top + 262, 24);
       const tips = ['별 5개를 모으면 부스트!', '초록 화살표를 밟으면 슝~ 빨라져요', '장애물을 피해서 달려 봐요'];
       ink(tips[g.losses % tips.length], W / 2, top + 308, 20, '#8a6a58', 'center', W - 130);
@@ -1269,11 +1436,11 @@
     ink('태리는 챔피언!', W / 2, top + 66, 44, PINK);
     emoji('🏆', W / 2, top + 156 + bob, 74, Math.sin(g.t * 3) * 0.1);
     taeriHead(W / 2 - 88, top + 258 + bob, 56, 'happy');
-    labooHead(W / 2 + 92, top + 264 - bob, 50, 'happy', g.t);
-    rrect(W / 2 - 150, top + 332, 120, 38, 12, '#fff', PINK, 3);
-    ink('임태리', W / 2 - 90, top + 352, 25, PINK);
-    rrect(W / 2 + 36, top + 332, 112, 38, 12, '#fff', MINT, 3);
-    ink('라부부', W / 2 + 92, top + 352, 25, '#1f9d7f');
+    labooFull(W / 2 + 92, top + 238 - bob, 33, 'happy', g.t);
+    rrect(W / 2 - 150, top + 346, 120, 38, 12, '#fff', PINK, 3);
+    ink('임태리', W / 2 - 90, top + 366, 25, PINK);
+    rrect(W / 2 + 36, top + 346, 112, 38, 12, '#fff', MINT, 3);
+    ink('라부부', W / 2 + 92, top + 366, 25, '#6c49c9');
     ink('태리와 라부부는 사이좋은 친구가 되었어요', W / 2, top + 414, 20, '#8a6a58', 'center', W - 110);
     ink('코스 3개를 모두 이겼어요!', W / 2, top + 448, 20, '#2fa88b');
     const pulse = Math.floor(g.t * 2) % 2 === 0;
