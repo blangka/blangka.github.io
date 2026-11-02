@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>고양이 기사의 탐험</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage" data-state="title">
+    <canvas id="game"></canvas>
+
+    <a class="home" href="../index.html">&larr; Home</a>
+
+    <div id="touch">
+      <div id="stick"><div id="knob"></div></div>
+      <button id="btnPause" type="button" aria-label="일시정지">&#9208;</button>
+      <button id="btnBomb" type="button" aria-label="폭탄">&#128163;</button>
+      <button id="btnMissile" type="button" aria-label="미사일">&#128640;</button>
+    </div>
+  </div>
+
+  <script src="chapters.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
