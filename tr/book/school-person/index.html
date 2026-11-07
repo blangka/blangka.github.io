@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>학교 사람 - 동화책</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../book.css">
+</head>
+<body>
+  <div class="reader" id="reader">
+    <div class="topbar">
+      <a href="../">&larr; 책 목록</a>
+      <span class="title">학교 사람</span>
+    </div>
+
+    <div class="stage">
+      <div id="view" aria-live="polite">
+        <div class="track" id="track"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prev" type="button" aria-label="이전 장">&#9664;</button>
+      <span class="label" id="label"></span>
+      <button id="next" type="button" aria-label="다음 장">&#9654;</button>
+    </div>
+    <p class="hint">
+      <span class="kbd">키보드 &larr; &rarr; 방향키로 넘겨요</span>
+      <span class="touch">옆으로 밀어서 넘겨요</span>
+    </p>
+  </div>
+
+  <script src="book.js"></script>
+  <script>window.BOOK = window.BOOKS["school-person"];</script>
+  <script src="../reader.js"></script>
+</body>
+</html>

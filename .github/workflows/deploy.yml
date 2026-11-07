@@ -29,6 +29,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # 배포마다 CSS/JS 주소 뒤에 ?v=<커밋 해시>를 붙여 브라우저 캐시를 무효화
+      # (배포용 복사본에만 적용되고 저장소 파일은 바뀌지 않음)
+      - name: Cache-bust CSS/JS
+        run: |
+          find . -name '*.html' -not -path './.git/*' -exec \
+            perl -pi -e 's{((?:src|href)="(?!https?:|//)[^"?]+\.(?:js|css))"}{$1?v=$ENV{GITHUB_SHA}"}g' {} +
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
