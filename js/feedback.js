@@ -36,7 +36,6 @@ function initFeedback(root) {
   var classId = root.dataset.class;
   var store = loadStore();
 
-  // The roster can be edited on the page, so always read the current list.
   function getStudents() { return CLASSES[classId] || []; }
 
   // Weekdays the class meets, taken from the schedule ("Mon / Wed / Thu").
@@ -240,21 +239,6 @@ function initFeedback(root) {
       fileInput.value = "";
     };
     reader.readAsText(file);
-  });
-
-  // Roster edited: carry feedback over to renamed students and refresh the view.
-  document.addEventListener("roster-change", function (e) {
-    if (e.detail.classId !== classId) return;
-    var renames = e.detail.renames || {};
-    var data = store[classId] || {};
-    Object.keys(data).forEach(function (date) {
-      var moved = {};
-      Object.keys(data[date]).forEach(function (n) { moved[renames[n] || n] = data[date][n]; });
-      data[date] = moved;
-    });
-    saveStore(store);
-    renderCalendar();
-    if (selected) renderPanel();
   });
 
   renderCalendar();
