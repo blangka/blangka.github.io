@@ -5,9 +5,16 @@
   var uid = 0;
   function id(p) { return p + (++uid); }
 
-  function svg(label, body, vb, par) {
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (vb || "0 0 400 280") + '"' +
-      (par ? ' preserveAspectRatio="' + par + '"' : "") + ' role="img" aria-label="' + label + '">' + body + "</svg>";
+  function svg(label, body, vb, par, bright) {
+    var v = id("vg");
+    var vig = bright ? "" :
+      '<defs><radialGradient id="' + v + '" cx=".5" cy=".5" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></radialGradient></defs>' +
+      '<rect width="100%" height="100%" fill="url(#' + v + ')" style="pointer-events:none"/>';
+    var box = vb || "0 0 400 280";
+    var wh = box.split(" ");
+    if (!bright) vig = vig.replace('width="100%" height="100%"', 'x="' + wh[0] + '" y="' + wh[1] + '" width="' + wh[2] + '" height="' + wh[3] + '"');
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + box + '"' +
+      (par ? ' preserveAspectRatio="' + par + '"' : "") + ' role="img" aria-label="' + label + '">' + body + vig + "</svg>";
   }
 
   function stars(list) {
@@ -47,80 +54,152 @@
       '<path d="M' + (tx - 5) + " " + (y + h - 1) + " L" + tx + " " + (y + h + 9) + " L" + (tx + 6) + " " + (y + h - 1) + 'z" fill="' + fill + '"/>' + t + "</g>";
   }
 
-  // 하준이 (주인공). 원점 = 발 아래 가운데, 키 약 70
+  // 하준이 (주인공). tr/book/image/images.jpeg 의 민또·경또 느낌: 하얀 네모 얼굴, 점 눈, 네모 손, 한복 조끼, 상어 모자.
+  // 원점 = 발 아래 가운데, 키 약 80
   function kid(x, y, s, o) {
     o = o || {};
-    var skin = "#f7d3b0", jacket = "#f2b632", ink = "#2a1d1a";
-    var eyes, mouth, arms;
+    var k = id("k");
+    var ink = "#1c1a24";
+    var line = ' stroke="rgba(30,30,60,.35)" stroke-width="1"';
+    var defs = '<defs>' +
+      '<linearGradient id="' + k + 'v" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a5f9e"/><stop offset="1" stop-color="#2c3b73"/></linearGradient>' +
+      '<linearGradient id="' + k + 'h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d3e0"/><stop offset="1" stop-color="#6fa3b8"/></linearGradient>' +
+      '<radialGradient id="' + k + 'f" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe3ee"/></radialGradient></defs>';
+
+    var eyes, brows = "", mouth, extra = "", blush = "";
     if (o.closed) {
-      eyes = '<path d="M-8 -62 l5 2.5 l-5 2.5 M8 -62 l-5 2.5 l5 2.5" fill="none" stroke="' + ink + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>';
-      mouth = '<path d="M-4 -49 q2 -3 4 0 q2 3 4 0" fill="none" stroke="#7a2a2a" stroke-width="1.3" stroke-linecap="round"/>';
+      eyes = '<path d="M-9 -50 q3.2 3.4 6.4 0 M2.6 -50 q3.2 3.4 6.4 0" fill="none" stroke="' + ink + '" stroke-width="1.8" stroke-linecap="round"/>';
+      brows = '<path d="M-10 -56 L-3 -58.4 M10 -56 L3 -58.4" fill="none" stroke="' + ink + '" stroke-width="1.4" stroke-linecap="round"/>';
+      mouth = '<path d="M-3.4 -42 q1.7 -2.4 3.4 0 q1.7 2.4 3.4 0" fill="none" stroke="' + ink + '" stroke-width="1.4" stroke-linecap="round"/>';
     } else if (o.scared) {
-      eyes = '<circle cx="-4.5" cy="-58" r="3.2" fill="#fff" stroke="' + ink + '" stroke-width=".8"/><circle cx="4.5" cy="-58" r="3.2" fill="#fff" stroke="' + ink + '" stroke-width=".8"/>' +
-        '<circle cx="-4.5" cy="-58" r="1.3" fill="' + ink + '"/><circle cx="4.5" cy="-58" r="1.3" fill="' + ink + '"/>';
-      mouth = '<ellipse cx="0" cy="-50.5" rx="2.2" ry="3" fill="#7a2a2a"/>';
+      eyes = '<ellipse cx="-6.2" cy="-51" rx="2.7" ry="3.5" fill="' + ink + '"/><ellipse cx="6.2" cy="-51" rx="2.7" ry="3.5" fill="' + ink + '"/>' +
+        '<circle cx="-5.4" cy="-52.2" r=".9" fill="#fff"/><circle cx="7" cy="-52.2" r=".9" fill="#fff"/>';
+      brows = '<path d="M-10.5 -57.6 Q-6.5 -61.4 -2.6 -58.2 M10.5 -57.6 Q6.5 -61.4 2.6 -58.2" fill="none" stroke="' + ink + '" stroke-width="1.4" stroke-linecap="round"/>';
+      mouth = '<ellipse cx="0" cy="-42.4" rx="3" ry="3.8" fill="#4a1824"/><ellipse cx="0" cy="-41" rx="1.7" ry="1.1" fill="#d36a78"/>';
+      blush = '<ellipse cx="-11.6" cy="-45.6" rx="3" ry="1.8" fill="#ffa0a8" opacity=".55"/><ellipse cx="11.6" cy="-45.6" rx="3" ry="1.8" fill="#ffa0a8" opacity=".55"/>';
+      extra = '<path class="tear" d="M15 -60 q-2.8 4.6 0 6.2 q2.8 -1.6 0 -6.2z" fill="#9fd8ff" stroke="#5aa6d6" stroke-width=".6"/>';
+    } else if (o.smile) {
+      eyes = '<path d="M-9 -50.4 q3.2 -3.6 6.4 0 M2.6 -50.4 q3.2 -3.6 6.4 0" fill="none" stroke="' + ink + '" stroke-width="1.8" stroke-linecap="round"/>';
+      mouth = '<path d="M-5 -44 Q0 -37.6 5 -44z" fill="#7a2434" stroke="' + ink + '" stroke-width="1" stroke-linejoin="round"/>';
+      blush = '<ellipse cx="-11.6" cy="-45.6" rx="3" ry="1.8" fill="#ffa0a8" opacity=".6"/><ellipse cx="11.6" cy="-45.6" rx="3" ry="1.8" fill="#ffa0a8" opacity=".6"/>';
     } else {
-      eyes = '<circle cx="-4.5" cy="-58" r="1.7" fill="' + ink + '"/><circle cx="4.5" cy="-58" r="1.7" fill="' + ink + '"/>';
-      mouth = o.smile
-        ? '<path d="M-4 -52 q4 5 8 0" fill="none" stroke="#7a2a2a" stroke-width="1.4" stroke-linecap="round"/>'
-        : '<path d="M-3 -51 h6" fill="none" stroke="#7a2a2a" stroke-width="1.3" stroke-linecap="round"/>';
+      eyes = '<ellipse cx="-6.2" cy="-51" rx="2" ry="2.5" fill="' + ink + '"/><ellipse cx="6.2" cy="-51" rx="2" ry="2.5" fill="' + ink + '"/>';
+      mouth = '<path d="M-3.4 -42.4 q1.7 2 3.4 0 q1.7 2 3.4 0" fill="none" stroke="' + ink + '" stroke-width="1.3" stroke-linecap="round"/>';
     }
+
     var arm = function (x1, y1, x2, y2) {
-      return '<path d="M' + x1 + " " + y1 + " L" + x2 + " " + y2 + '" stroke="' + jacket + '" stroke-width="6" stroke-linecap="round"/>' +
-        '<circle cx="' + x2 + '" cy="' + y2 + '" r="3.3" fill="' + skin + '"/>';
+      return '<path d="M' + x1 + " " + y1 + " L" + x2 + " " + y2 + '" stroke="#c4c9d8" stroke-width="8.6" stroke-linecap="round"/>' +
+        '<path d="M' + x1 + " " + y1 + " L" + x2 + " " + y2 + '" stroke="#fbfcff" stroke-width="7" stroke-linecap="round"/>' +
+        '<rect x="' + (x2 - 4.2) + '" y="' + (y2 - 4.2) + '" width="8.4" height="8.4" rx="3" fill="url(#' + k + 'f)"' + line + "/>";
     };
-    if (o.arms === "up") arms = arm(-11, -44, -18, -68) + arm(11, -44, 18, -68);
-    else if (o.arms === "wave") arms = arm(-11, -44, -15, -26) + arm(11, -44, 20, -68);
-    else arms = arm(-11, -44, -15, -26) + arm(11, -44, 15, -26);
-    return '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' +
-      '<ellipse cx="0" cy="0" rx="15" ry="3" fill="rgba(0,0,0,.35)"/>' +
-      '<rect x="-16" y="-46" width="6" height="19" rx="3" fill="#e0533d"/><rect x="10" y="-46" width="6" height="19" rx="3" fill="#e0533d"/>' +
-      '<rect x="-8" y="-24" width="6.5" height="21" rx="2" fill="#3a4a8a"/><rect x="1.5" y="-24" width="6.5" height="21" rx="2" fill="#3a4a8a"/>' +
-      '<rect x="-10" y="-4" width="9" height="4" rx="2" fill="#222"/><rect x="1" y="-4" width="9" height="4" rx="2" fill="#222"/>' +
-      '<rect x="-11" y="-49" width="22" height="28" rx="6" fill="' + jacket + '"/>' +
-      '<path d="M-5 -49 L-5 -30 M5 -49 L5 -30" stroke="#fff" stroke-width="1.4" opacity=".7"/>' +
+    var arms;
+    if (o.arms === "up") arms = arm(-12, -33, -26, -60) + arm(12, -33, 26, -60);
+    else if (o.arms === "wave") arms = arm(-12, -33, -17, -17) + arm(12, -33, 26, -60);
+    else arms = arm(-12, -33, -17, -17) + arm(12, -33, 17, -17);
+
+    // 상어 모자: 지느러미, 이빨, 목도리
+    var teeth = "";
+    for (var t = -13; t <= 11; t += 5) teeth += '<path d="M' + t + " -66 L" + (t + 2.5) + " -61.6 L" + (t + 5) + ' -66z" fill="#fff"' + line + "/>";
+
+    return defs + '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' +
+      '<ellipse cx="0" cy="0" rx="19" ry="3.4" fill="rgba(0,0,0,.4)"/>' +
+      '<rect x="-17" y="-42" width="34" height="27" rx="8" fill="#d9482f"/>' +
+      '<rect x="-8.6" y="-16" width="7.4" height="12" rx="2" fill="#e8eef9"' + line + '/><rect x="1.2" y="-16" width="7.4" height="12" rx="2" fill="#e8eef9"' + line + "/>" +
+      '<rect x="-12" y="-5.4" width="10.4" height="5.4" rx="2.4" fill="#fff"' + line + '/><rect x="1.6" y="-5.4" width="10.4" height="5.4" rx="2.4" fill="#fff"' + line + "/>" +
+      '<path d="M-11 -38 Q0 -42 11 -38 L13 -14 Q0 -11 -13 -14Z" fill="url(#' + k + 'v)"' + line + "/>" +
+      '<rect x="-13" y="-22" width="26" height="3.4" fill="#d9b04a"/>' +
+      '<path d="M0 -37 V-14" stroke="#1f2a55" stroke-width="1"/>' +
+      '<path d="M0 -33 Q-8 -37 -9 -29 Q-4 -28 0 -33 Q4 -28 9 -29 Q8 -37 0 -33z M-1 -33 Q-3 -23 -5 -17 M1 -33 Q3 -23 5 -17" fill="#a9d3e0" stroke="#6fa3b8" stroke-width=".9" stroke-linejoin="round"/>' +
       arms +
-      '<circle cx="0" cy="-58" r="11.5" fill="' + skin + '"/>' +
-      '<path d="M-12 -59 a12 12 0 0 1 24 0 q-4 -5 -12 -5 q-8 0 -12 5z" fill="' + ink + '"/>' +
-      '<circle cx="-7" cy="-53" r="2.4" fill="#ff9a9a" opacity=".5"/><circle cx="7" cy="-53" r="2.4" fill="#ff9a9a" opacity=".5"/>' +
-      eyes + mouth + "</g>";
+      // 목도리
+      '<ellipse cx="0" cy="-39" rx="15" ry="5" fill="#9bc4d2"' + line + '/>' +
+      // 상어 모자
+      '<path d="M-3 -77 L4 -92 L10 -77z" fill="url(#' + k + 'h)"' + line + "/>" +
+      '<rect x="-22" y="-80" width="44" height="42" rx="19" fill="url(#' + k + 'h)"' + line + "/>" +
+      '<rect x="-16.5" y="-68" width="33" height="29" rx="11" fill="url(#' + k + 'f)"' + line + "/>" +
+      teeth +
+      '<path d="M-20 -52 Q-24 -46 -20 -42 M20 -52 Q24 -46 20 -42" fill="none" stroke="#5f8fa6" stroke-width="1.2" stroke-linecap="round"/>' +
+      blush + brows + eyes + mouth + extra + "</g>";
   }
 
-  // 학교 사람. 원점 = 발 아래 가운데, 키 약 145
+  // 학교 사람. 어린이 책 스타일: 키가 크고 가늘고, 긴 검은 머리, 창백한 얼굴. 원점 = 발 아래 가운데, 키 약 152
   function figure(x, y, s, o) {
     o = o || {};
-    var face = "";
-    if (o.smile) {
-      face = '<path d="M-9 -131 q3.5 -4 7 0 M2 -131 q3.5 -4 7 0" fill="none" stroke="#5a4a3a" stroke-width="1.8" stroke-linecap="round"/>' +
-        '<path d="M-6 -122 q6 6 12 0" fill="none" stroke="#5a4a3a" stroke-width="1.8" stroke-linecap="round"/>' +
-        '<circle cx="-10" cy="-124" r="3" fill="#ffb8a0" opacity=".6"/><circle cx="10" cy="-124" r="3" fill="#ffb8a0" opacity=".6"/>';
-    } else if (o.sad) {
-      face = '<path d="M-9 -129 q3.5 3 7 0 M2 -129 q3.5 3 7 0" fill="none" stroke="#5a4a3a" stroke-width="1.6" stroke-linecap="round"/>' +
-        '<path d="M-4 -120 q4 -3 8 0" fill="none" stroke="#5a4a3a" stroke-width="1.6" stroke-linecap="round"/>';
+    var f = id("f");
+    var happy = !!o.smile, sad = !!o.sad;
+    var rim = o.rim ? "#8a7be0" : "#463c7a";
+    var defs = '<defs>' +
+      '<linearGradient id="' + f + 'c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0d0a1e"/><stop offset=".5" stop-color="#2a2352"/><stop offset="1" stop-color="#0a0818"/></linearGradient>' +
+      '<radialGradient id="' + f + 'f" cx=".5" cy=".4" r=".75"><stop offset="0" stop-color="#fbf7ec"/><stop offset="1" stop-color="#cfc9b8"/></radialGradient>' +
+      '<radialGradient id="' + f + 'g"><stop offset="0" stop-color="#e6e1ff" stop-opacity=".5"/><stop offset="1" stop-color="#e6e1ff" stop-opacity="0"/></radialGradient></defs>';
+
+    function hand(sx) {
+      var fingers = [-3, -1, 1, 3].map(function (dx, i) {
+        return '<path d="M' + dx + " 3 q" + (sx * 0.6) + " 7 " + (dx * 0.6) + " " + (15 + (i === 1 || i === 2 ? 3 : 0)) + '" stroke="#d9d4c4" stroke-width="1.7" fill="none" stroke-linecap="round"/>';
+      }).join("");
+      return '<g transform="translate(' + (sx * 24) + ' -38)"><ellipse cx="0" cy="0" rx="3.8" ry="5" fill="#d9d4c4"/>' + fingers + "</g>";
     }
-    var tear = o.tear ? '<g class="tear"><path d="M-5 -125 q-3.5 6 0 8.5 q3.5 -2.5 0 -8.5z" fill="#8fd0ff"/></g>' : "";
-    var rim = o.rim ? ' stroke="#17122c" stroke-width="2"' : "";
-    return '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' +
-      '<rect x="-10" y="-48" width="8" height="48" rx="2" fill="#0b0816"/><rect x="2" y="-48" width="8" height="48" rx="2" fill="#0b0816"/>' +
-      '<path d="M-19 -108 Q-32 -75 -27 -44" stroke="#17122c" stroke-width="8" fill="none" stroke-linecap="round"/>' +
-      '<path d="M19 -108 Q32 -75 27 -44" stroke="#17122c" stroke-width="8" fill="none" stroke-linecap="round"/>' +
-      '<circle cx="-27" cy="-41" r="4.5" fill="#e9e2cc"/><circle cx="27" cy="-41" r="4.5" fill="#e9e2cc"/>' +
-      '<path d="M-20 -112 Q0 -118 20 -112 L24 -38 L-24 -38 Z" fill="#17122c"/>' +
-      '<path d="M-8 -114 L0 -102 L8 -114 Z" fill="#e9e2cc"/>' +
-      '<g fill="#cdbb7a"><circle cx="0" cy="-94" r="1.7"/><circle cx="0" cy="-82" r="1.7"/><circle cx="0" cy="-70" r="1.7"/><circle cx="0" cy="-58" r="1.7"/></g>' +
-      '<rect x="-4" y="-120" width="8" height="8" fill="#e9e2cc"/>' +
-      '<g transform="rotate(' + (o.bow || 0) + ' 0 -112)">' +
-      '<circle cx="0" cy="-128" r="27" fill="#fff6d0" opacity=".18"/>' +
-      '<circle cx="0" cy="-128" r="17" fill="#f6f1e0"' + rim + "/>" + face + tear + "</g></g>";
+
+    var face, tear = "";
+    if (happy) {
+      face = '<path d="M-9.6 -134 q4 -5.2 8 0 M1.6 -134 q4 -5.2 8 0" fill="none" stroke="#4a3a30" stroke-width="1.9" stroke-linecap="round"/>' +
+        '<path d="M-5.6 -124.5 Q0 -118 5.6 -124.5" fill="none" stroke="#8a3a3a" stroke-width="2" stroke-linecap="round"/>' +
+        '<ellipse cx="-7.4" cy="-127.6" rx="3.2" ry="2.1" fill="#ff9a9a" opacity=".6"/><ellipse cx="7.4" cy="-127.6" rx="3.2" ry="2.1" fill="#ff9a9a" opacity=".6"/>';
+    } else if (sad) {
+      face = '<ellipse cx="-5.2" cy="-133" rx="3" ry="4.2" fill="#07050f"/><ellipse cx="5.2" cy="-133" rx="3" ry="4.2" fill="#07050f"/>' +
+        '<circle cx="-4.4" cy="-134.6" r=".9" fill="#fff"/><circle cx="6" cy="-134.6" r=".9" fill="#fff"/>' +
+        '<path d="M-9 -140 L-2.6 -137.4 M9 -140 L2.6 -137.4" stroke="#2d2438" stroke-width="1.5" stroke-linecap="round"/>' +
+        '<path d="M-4.2 -121 Q0 -124.4 4.2 -121" fill="none" stroke="#4a2433" stroke-width="1.6" stroke-linecap="round"/>';
+      if (o.tear) tear = '<g class="tear"><path d="M-5.6 -128 q-3.4 5.4 0 7.6 q3.4 -2.2 0 -7.6z" fill="#9fd8ff"/></g>';
+    } else {
+      face = '<ellipse cx="-5.2" cy="-132.4" rx="5" ry="7" fill="#2a2038" opacity=".5"/><ellipse cx="5.2" cy="-132.4" rx="5" ry="7" fill="#2a2038" opacity=".5"/>' +
+        '<ellipse cx="-5.2" cy="-133" rx="3.4" ry="5.2" fill="#030208"/><ellipse cx="5.2" cy="-133" rx="3.4" ry="5.2" fill="#030208"/>' +
+        '<circle class="flick" cx="-4.2" cy="-135" r="1.1" fill="#fff"/><circle class="flick" cx="6.2" cy="-135" r="1.1" fill="#fff"/>' +
+        '<path d="M0 -128 q-1 3 .4 4" stroke="#a9a28f" stroke-width="1" fill="none" stroke-linecap="round"/>' +
+        '<path d="M-4.6 -121.6 Q0 -119.4 4.6 -121.6" fill="none" stroke="#4a2433" stroke-width="1.5" stroke-linecap="round"/>';
+    }
+
+    return defs + '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' +
+      '<rect x="-8" y="-48" width="6" height="46" rx="1" fill="#07050f"/><rect x="2" y="-48" width="6" height="46" rx="1" fill="#07050f"/>' +
+      '<ellipse cx="-6" cy="-1" rx="7.5" ry="2.8" fill="#030208"/><ellipse cx="6" cy="-1" rx="7.5" ry="2.8" fill="#030208"/>' +
+      '<path d="M-14 -110 Q0 -116 14 -110 L18 -44 Q0 -38 -18 -44Z" fill="url(#' + f + 'c)" stroke="' + rim + '" stroke-width="1.2"/>' +
+      '<path d="M-5 -113 L0 -104 L5 -113" fill="none" stroke="#d8d2c0" stroke-width="1.6" stroke-linejoin="round"/>' +
+      '<path d="M0 -104 V-44" stroke="#000" stroke-width=".8" opacity=".6"/>' +
+      '<g fill="#a89a4a"><circle cx="0" cy="-95" r="1.4"/><circle cx="0" cy="-83" r="1.4"/><circle cx="0" cy="-71" r="1.4"/><circle cx="0" cy="-59" r="1.4"/></g>' +
+      '<path d="M-14 -108 Q-30 -76 -24 -42" stroke="' + rim + '" stroke-width="8" fill="none" stroke-linecap="round"/>' +
+      '<path d="M14 -108 Q30 -76 24 -42" stroke="' + rim + '" stroke-width="8" fill="none" stroke-linecap="round"/>' +
+      '<path d="M-14 -108 Q-30 -76 -24 -42" stroke="#15102c" stroke-width="6.4" fill="none" stroke-linecap="round"/>' +
+      '<path d="M14 -108 Q30 -76 24 -42" stroke="#15102c" stroke-width="6.4" fill="none" stroke-linecap="round"/>' +
+      hand(-1) + hand(1) +
+      '<g transform="rotate(' + (o.bow || 0) + ' 0 -116)">' +
+      (happy ? "" : '<circle cx="0" cy="-132" r="32" fill="url(#' + f + 'g)"/>') +
+      '<path d="M-15 -140 Q-24 -112 -18 -80 L-11 -92 L-5 -84 L0 -93 L5 -84 L11 -92 L18 -80 Q24 -112 15 -140 Q0 -158 -15 -140Z" fill="#06050c"/>' +
+      '<rect x="-3.4" y="-120" width="6.8" height="10" fill="#c3bda9"/>' +
+      '<rect x="-12" y="-148" width="24" height="31" rx="9" fill="url(#' + f + 'f)"/>' + face + tear +
+      '<path d="M-12.4 -134 Q-14.6 -152 0 -151 L-1 -143 Q-7 -140 -9.6 -128 L-13.4 -106 Q-17.4 -122 -12.4 -134Z" fill="#06050c"/>' +
+      '<path d="M12.4 -134 Q14.6 -152 0 -151 L1 -143 Q7 -140 9.6 -128 L13.4 -106 Q17.4 -122 12.4 -134Z" fill="#06050c"/>' +
+      "</g></g>";
   }
 
+  // 오래전 학교를 다닌 아이 유령 (이불 유령 모양)
   function ghost(x, y, s, o) {
     o = o || {};
-    return '<g class="float" style="animation-delay:' + (o.d || 0) + 's"><g transform="translate(' + x + " " + y + ") scale(" + s + ')" opacity="' + (o.op || 0.72) + '">' +
-      '<path d="M-13 0 V-28 a13 13 0 0 1 26 0 V0 l-4.3 -5 l-4.3 5 l-4.4 -5 l-4.4 5 l-4.3 -5 z" fill="#cfe9ff"/>' +
-      '<ellipse cx="-5" cy="-30" rx="2" ry="3" fill="#1a1a3a"/><ellipse cx="5" cy="-30" rx="2" ry="3" fill="#1a1a3a"/>' +
-      '<ellipse cx="0" cy="-22" rx="2" ry="2.6" fill="#1a1a3a"/>' +
-      '<path d="M13 -16 q9 -3 9 -17" stroke="#cfe9ff" stroke-width="5" fill="none" stroke-linecap="round"/></g></g>';
+    var g = id("gh");
+    return '<defs><linearGradient id="' + g + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef4ff" stop-opacity=".95"/><stop offset="1" stop-color="#cfe0ff" stop-opacity=".1"/></linearGradient></defs>' +
+      '<g class="float" style="animation-delay:' + (o.d || 0) + 's"><g transform="translate(' + x + " " + y + ") scale(" + s + ')" opacity="' + (o.op || 0.9) + '">' +
+      '<path d="M-14 -32 Q-14 -49 0 -49 Q14 -49 14 -32 L14 3 Q10.5 -3 7 3 Q3.5 -3 0 3 Q-3.5 -3 -7 3 Q-10.5 -3 -14 3Z" fill="url(#' + g + ')" stroke="#bcd0ff" stroke-width="1"/>' +
+      '<ellipse cx="-16" cy="-22" rx="4.6" ry="2.8" transform="rotate(25 -16 -22)" fill="#e6efff" opacity=".85"/><ellipse cx="16" cy="-22" rx="4.6" ry="2.8" transform="rotate(-25 16 -22)" fill="#e6efff" opacity=".85"/>' +
+      '<ellipse cx="-5.2" cy="-34" rx="2.9" ry="4.3" fill="#080b18"/><ellipse cx="5.2" cy="-34" rx="2.9" ry="4.3" fill="#080b18"/>' +
+      '<circle cx="-4.4" cy="-35.6" r=".9" fill="#fff"/><circle cx="6" cy="-35.6" r=".9" fill="#fff"/>' +
+      '<ellipse cx="0" cy="-24.6" rx="2.4" ry="3.4" fill="#080b18"/></g></g>';
+  }
+
+  // 바닥에 깔리는 옅은 안개
+  function mist(y, h, op, d) {
+    var m = id("ms");
+    return '<defs><radialGradient id="' + m + '"><stop offset="0" stop-color="#cdd6ff" stop-opacity="' + op + '"/><stop offset="1" stop-color="#cdd6ff" stop-opacity="0"/></radialGradient></defs>' +
+      '<g class="drift" style="animation-delay:-' + (d || 0) + 's"><ellipse cx="120" cy="' + y + '" rx="200" ry="' + h + '" fill="url(#' + m + ')"/>' +
+      '<ellipse cx="330" cy="' + (y + 4) + '" rx="180" ry="' + (h * 0.9) + '" fill="url(#' + m + ')"/></g>';
   }
 
   function desk(x, y, w) {
@@ -449,11 +528,10 @@
       '<rect y="244" width="400" height="36" fill="#3a2a5a"/>' +
       '<g class="float" style="animation-duration:4.5s">' + figure(305, 250, 1.5, { smile: true, bow: -12 }) + "</g>" +
       kid(108, 280, 1.35, { arms: "up", smile: true }) +
-      '<g transform="rotate(-5 105 150)"><rect x="56" y="98" width="100" height="92" rx="4" fill="#f8f2e0" stroke="#c9b98a" stroke-width="2"/>' +
+      '<g transform="translate(0 -16) rotate(-5 105 150)"><rect x="56" y="98" width="100" height="92" rx="4" fill="#f8f2e0" stroke="#c9b98a" stroke-width="2"/>' +
       '<rect x="56" y="98" width="10" height="92" rx="3" fill="#e0533d"/>' +
       '<path d="M76 118 H146 M76 132 H146 M76 176 H146" stroke="#d7cdb0" stroke-width="1.2"/>' +
       '<text x="111" y="164" text-anchor="middle" font-size="36" fill="#2d2540" font-family="Jua, sans-serif">친구</text></g>' +
-      '<circle cx="78" cy="188" r="5.5" fill="#f7d3b0"/><circle cx="140" cy="182" r="5.5" fill="#f7d3b0"/>' +
       '<g class="tw" fill="#ffe27a"><path d="M232 120 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M370 150 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z" style="animation-delay:1s"/><path d="M168 60 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" style="animation-delay:.5s"/></g>';
     return svg("하준이가 친구라고 쓴 공책을 보여 주자 학교 사람이 웃어요", b);
   }
@@ -489,7 +567,7 @@
       kids +
       bubble(226, 214, 120, ["하준아, 안녕!"], 12, 100, "#fff7c9") +
       kid(34, 274, 1.1, { smile: true, arms: "wave" });
-    return svg("다음 날 아침 교실에서 보이지 않던 친구가 인사해요", b);
+    return svg("다음 날 아침 교실에서 보이지 않던 친구가 인사해요", b, null, null, true);
   }
 
   var pages = [
@@ -503,7 +581,7 @@
     { art: s7(), text: ["하준이는 계단을 힘껏 뛰어 올라갔어요.", "2층, 3층, 4층… 그런데 이상해요. 우리 학교는 3층까지밖에 없는데!", "올라가도 올라가도 계단이 끝나지 않았어요."] },
     { art: s8(), text: ["겨우겨우 교실에 도착했어요.", "그때 칠판에 하얀 분필 글씨가 스르르 나타났어요.", "‘출석을 부르겠습니다.’"] },
     { art: s9(), text: ["텅 빈 교실에 목소리가 울렸어요.", "“김하준.” “…네.” 하준이는 떨리는 목소리로 대답했어요.", "“이서연.” “…네….” 아무도 없는 자리에서 대답이 들려왔어요! 아주 오래전 이 학교를 다녔던 아이들 같았어요."] },
-    { art: s10(), text: ["마지막으로 목소리가 말했어요. “그리고… 나.”", "교실 맨 뒤 어두운 구석에서, 키가 천장에 닿을 만큼 큰 그림자가 천천히 일어났어요.", "얼굴은 하얀 보름달처럼 동그랗고 아무것도 없었어요. 바로 ‘학교 사람’이었어요!"] },
+    { art: s10(), text: ["마지막으로 목소리가 말했어요. “그리고… 나.”", "교실 맨 뒤 어두운 구석에서, 키가 천장에 닿을 만큼 큰 그림자가 천천히 일어났어요.", "얼굴은 보름달처럼 창백했고, 새까만 눈구멍이 하준이를 내려다보았어요. 바로 ‘학교 사람’이었어요!"] },
     { art: s11(), text: ["하준이는 눈을 꼭 감았어요.", "그때 아빠가 해 주신 말이 떠올랐어요. “무서울 땐 이름을 불러 보렴. 이름이 있으면 괴물이 아니란다.”", "하준이는 용기를 내어 물었어요. “너… 이름이 뭐니?”"] },
     { art: s12(), text: ["학교 사람은 한참 동안 가만히 서 있다가 아주 작은 목소리로 말했어요.", "“몰라… 아무도 나를 불러 준 적이 없어서 잊어버렸단다. 백 년 동안 이 학교에서 계속 혼자였어.”", "하얀 얼굴 위로 눈물이 똑 떨어졌어요."] },
     { art: s13(), text: ["하준이는 공책 맨 앞 장에 연필로 큰 글씨를 썼어요.", "“그럼 오늘부터 네 이름은 ‘친구’야. 나는 하준이야.”", "학교 사람의 얼굴이 환한 보름달처럼 활짝 웃었어요."] },

@@ -19,6 +19,7 @@
   <main class="shelf" id="shelf"></main>
 
   <!-- 새 책을 만들면 아래에 script를 한 줄 더 추가하세요. -->
+  <script src="photos.js"></script>
   <script src="school-person/book.js"></script>
   <script>
     var shelf = document.getElementById("shelf");
@@ -31,6 +32,11 @@
         '<div class="cover-box">' + b.cover +
         '<div class="cover-title"><h1>' + b.title + '</h1><p>' + b.sub + '</p></div></div>' +
         "<h2>" + b.title + "</h2><p>" + b.summary + "</p>";
+      var ph = document.createElement("img");
+      ph.className = "photo";
+      ph.alt = "";
+      a.querySelector(".cover-box").insertBefore(ph, a.querySelector(".cover-title"));
+      window.attachPhoto(ph, "img/cover", slug + "/");
       shelf.appendChild(a);
     });
   </script>

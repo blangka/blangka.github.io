@@ -249,3 +249,13 @@ a:hover { text-decoration: underline; }
   .tw, .flick, .float, .sway, .tear, .chalk, .pulse { animation: none; }
   .track { transition-duration: .01s; }
 }
+
+.drift { animation: drift 9s ease-in-out infinite alternate; }
+@keyframes drift { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+@media (prefers-reduced-motion: reduce) { .drift { animation: none; } }
+
+/* 실제 그림 파일(img/…)이 있으면 SVG 위에 덮어씀 */
+.page .art { position: relative; }
+.page .art img.photo, .book-card .cover-box img.photo {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+}

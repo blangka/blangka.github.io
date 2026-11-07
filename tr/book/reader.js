@@ -19,14 +19,16 @@
   var slideIdx = 0;
   var count = 0;
 
+  function photo(name) { return '<img class="photo" alt="" data-photo="img/' + name + '">'; }
+
   function pageHTML(i) {
     if (i === null || i >= N) return '<div class="page blank"></div>';
     var p = pages[i];
     if (p.cover) {
-      return '<section class="page cover"><div class="art">' + p.art + '</div>' +
+      return '<section class="page cover"><div class="art">' + p.art + photo("cover") + '</div>' +
         '<div class="cover-title"><h1>' + p.title + '</h1><p>' + p.sub + '</p></div></section>';
     }
-    return '<section class="page"><div class="art">' + p.art + '</div>' +
+    return '<section class="page"><div class="art">' + p.art + photo("p" + i) + '</div>' +
       '<div class="text">' + p.text.map(function (t) { return "<p>" + t + "</p>"; }).join("") + '</div>' +
       '<span class="page-no">' + i + '</span></section>';
   }
@@ -44,6 +46,9 @@
     track.innerHTML = slides.map(function (pair) {
       return '<div class="slide">' + pair.map(pageHTML).join("") + "</div>";
     }).join("");
+    Array.prototype.forEach.call(track.querySelectorAll("img[data-photo]"), function (img) {
+      window.attachPhoto(img, img.getAttribute("data-photo"), "");
+    });
     root.classList.toggle("spread", spread);
     root.classList.toggle("single", !spread);
   }
